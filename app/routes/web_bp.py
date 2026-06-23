@@ -154,3 +154,11 @@ def editar_usuario_view(id):
             return redirect(url_for("web.listar_usuarios_view"))
         
     return render_template("usuarios/form.html", usuario = usuario)
+
+
+@web_bp.route("/usuarios/excluir/<int:id>", methods=["POST"])
+def excluir_usuario_view(id):
+    sucesso, msg = usuarios_controller.excluir_usuario(id)
+    
+    flash(msg, "success" if sucesso else "danger")
+    return redirect(url_for("web.listar_usuarios_view"))
