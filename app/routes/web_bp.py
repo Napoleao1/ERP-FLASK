@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
-from app.controllers import (produtos_controller, categoria_controller)
+from app.controllers import (produtos_controller, categoria_controller, usuarios_controller)
 
 web_bp = Blueprint("web", __name__)
 
