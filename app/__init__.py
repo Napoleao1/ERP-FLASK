@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask # type: ignore
 from dotenv import load_dotenv
 from app.extensions import db
 from app.routes import web_bp

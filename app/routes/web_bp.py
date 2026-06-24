@@ -133,11 +133,6 @@ def novo_usuario_view():
     return render_template("usuarios/form.html", usuario = None)
 
 
-
-
-
-
-
 @web_bp.route("/usuarios/editar/<int:id>", methods=["GET", "POST"])
 def editar_usuario_view(id):
     usuario = usuarios_controller.obter_usuario(id)

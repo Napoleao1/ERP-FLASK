@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class = "d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 text-secondary">
+            <i class="bi bi-people"></i>Gerenciamento de Usuários
+        </h2>  
+        <a href="{{ url_for('web.novo_usuario_view') }}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-person-plus"></i> Novo usuario
+        </a>
+
+    </div>
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0 text-center align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                
+
+                <tbody>
+                    {% for usuario in usuarios %}
+                        <tr>
+                            <td class="fw-bold">{{ usuario.id }}</td>
+                            <td>{{ usuario.nome }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{{ url_for('web.editar_usuario_view', id = usuario.id )}}" class="btn btn-sm btn-outline-primary">
+                                        <i class = "bi bi-pencil"> </i>
+                                    </a>
+                                    <form action="{{ url_for('web.excluir_usuario_view', id=usuario.id) }}" method="POST"
+                                     onsubmit="return confirm ('deseja excluir permanentemente o usuario {{ usuario.nome }}?');">
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+
+                                    </button>
+
+                                    </form>
+                                </div>
+                            </td>                                
+
+
+                        </tr> 
+                    {% else %}
+                        <tr>
+                            <td colspan ="4" class="text-muted py-4">
+                                Nenhum usuario cadastrado
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
