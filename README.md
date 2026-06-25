@@ -18,7 +18,7 @@ A estrutura de diretórios adota a separação de responsabilidades para evitar 
 ├── requirements.txt      # Dependências do projeto
 ├── .env                  # Variáveis de ambiente (não versionado)
 ├── run.py                # Ponto de inicialização do servidor
-└── app/                
+└── app/              
     ├── __init__.py       # Application Factory (cria o app)
     ├── extensions.py     # Inicialização de extensões (SQLAlchemy, CORS)
     ├── models/           # Entidades do Banco de Dados (Tabelas)

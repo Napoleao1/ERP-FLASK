@@ -2,6 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app.controllers import (produtos_controller, categoria_controller, usuarios_controller)
 
+
 web_bp = Blueprint("web", __name__)
 
 @web_bp.route("/")
@@ -125,7 +126,7 @@ def novo_usuario_view():
         
         sucesso, msg = usuarios_controller.salvar_usuario(nome, email, senha)
         
-        flash(msg, "sucess" if sucesso else "danger")
+        flash(msg, "success" if sucesso else "danger")
         
         if sucesso:
             return redirect(url_for("web.listar_usuarios_view"))
@@ -143,7 +144,7 @@ def editar_usuario_view(id):
         
         sucesso, msg = usuarios_controller.salvar_usuario(nome, email, senha, usuario_id=id)
         
-        flash(msg, "sucess" if sucesso else "danger")
+        flash(msg, "success" if sucesso else "danger")
         
         if sucesso:
             return redirect(url_for("web.listar_usuarios_view"))
