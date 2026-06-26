@@ -1,20 +1,70 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_user, logout_user, current_user
 
 from app.controllers import (produtos_controller, categoria_controller, usuarios_controller)
 
 
 web_bp = Blueprint("web", __name__)
 
-@web_bp.route("/")
-def index():
-    return redirect(url_for("web.listar_produtos_view"))
+ROTAS_PUBLICAS = {"web.login_view"}
 
-# ROTAS DE PRODUTOS
+
+@web_bp.before_request
+def exigir_login():
+    if request.endpoint in ROTAS_PUBLICAS:
+        return
+    if not current_user.is_authenticated:
+        return redirect(url_for("web.login_view"))
+
+
+@web_bp.route("/login", methods=["GET", "POST"])
+def login_view():
+    if current_user.is_authenticated:
+        return redirect(url_for("web.dashboard_view"))
+
+    if request.method == "POST":
+        email = request.form.get("email")
+        senha = request.form.get("senha")
+
+        usuario = usuarios_controller.autenticar(email, senha)
+
+        if usuario:
+            login_user(usuario)
+            flash(f"Bem-vindo, {usuario.nome}!", "success")
+            destino = request.args.get("next")
+            return redirect(destino or url_for("web.dashboard_view"))
+
+        flash("E-mail ou senha inválidos.", "danger")
+
+    return render_template("login.html")
+
+
+@web_bp.route("/logout")
+def logout_view():
+    logout_user()
+    flash("Você saiu do sistema.", "info")
+    return redirect(url_for("web.login_view"))
+
+
+@web_bp.route("/")
+def dashboard_view():
+    total_produtos = produtos_controller.contar_produtos()
+    total_categorias = categoria_controller.contar_categorias()
+    total_usuarios = usuarios_controller.contar_usuarios()
+
+    return render_template(
+        "dashboard.html",
+        total_produtos=total_produtos,
+        total_categorias=total_categorias,
+        total_usuarios=total_usuarios,
+    )
+
 
 @web_bp.route("/produtos")
 def listar_produtos_view():
-    produtos = produtos_controller.listar_todos_produtos()
-    return render_template("produtos/listar.html", produtos=produtos)
+    page = request.args.get("page", 1, type=int)
+    paginacao = produtos_controller.listar_produtos_paginados(page=page)
+    return render_template("produtos/listar.html", paginacao=paginacao)
 
 @web_bp.route("/produto/novo", methods=["GET", "POST"])
 def novo_produto_view():
@@ -25,7 +75,7 @@ def novo_produto_view():
         preco = float(request.form.get("preco", 0))
         categoria_id = int(request.form.get("categoria_id", 0))
 
-        sucesso, msg = produtos_controller.salvar_produto(nome, preco, categoria_id)
+        sucesso, msg, _ = produtos_controller.salvar_produto(nome, preco, categoria_id)
         flash(msg, "success" if sucesso else "danger")
 
         if sucesso:
@@ -43,7 +93,7 @@ def editar_produto_view(id):
         preco = float(request.form.get("preco", 0))
         categoria_id = int(request.form.get("categoria_id", 0))
 
-        sucesso, msg = produtos_controller.salvar_produto(nome, preco, categoria_id, produto_id = id)
+        sucesso, msg, _ = produtos_controller.salvar_produto(nome, preco, categoria_id, produto_id = id)
 
         flash(msg, "success" if sucesso else "danger")
 
@@ -61,12 +111,11 @@ def excluir_produto_view(id):
     return redirect(url_for("web.listar_produtos_view"))
 
 
-# ROTAS DE CATEGORIAS
-
 @web_bp.route("/categorias")
 def listar_categorias_view():
-    categorias = categoria_controller.listar_todas_categorias()
-    return render_template("categorias/listar.html", categorias=categorias)
+    page = request.args.get("page", 1, type=int)
+    paginacao = categoria_controller.listar_categorias_paginadas(page=page)
+    return render_template("categorias/listar.html", paginacao=paginacao)
     
 
 @web_bp.route("/categorias/novo", methods=["GET", "POST"])
@@ -74,7 +123,7 @@ def nova_categoria_view():
     if request.method == "POST":
         nome = request.form.get("nome_categoria")
         
-        sucesso, msg = categoria_controller.salvar_categoria(nome)
+        sucesso, msg, _ = categoria_controller.salvar_categoria(nome)
 
         flash(msg, "success" if sucesso else "danger")
 
@@ -98,7 +147,7 @@ def editar_categoria_view(id):
     if request.method == "POST":
         nome = request.form.get("nome_categoria")
 
-        sucesso, msg = categoria_controller.salvar_categoria(nome, categoria_id=id)
+        sucesso, msg, _ = categoria_controller.salvar_categoria(nome, categoria_id=id)
 
         flash(msg, "success" if sucesso else "danger")
 
@@ -108,12 +157,11 @@ def editar_categoria_view(id):
     return render_template("categorias/form.html", categoria=categoria)
 
 
-# ROTAS DE USUARIO
-
 @web_bp.route("/usuarios")
 def listar_usuarios_view():
-    usuarios = usuarios_controller.listar_todos_usuarios()
-    return render_template("usuarios/listar.html", usuarios = usuarios)
+    page = request.args.get("page", 1, type=int)
+    paginacao = usuarios_controller.listar_usuarios_paginados(page=page)
+    return render_template("usuarios/listar.html", paginacao=paginacao)
 
 
 
@@ -124,7 +172,7 @@ def novo_usuario_view():
         email = request.form.get("email")
         senha = request.form.get("senha")
         
-        sucesso, msg = usuarios_controller.salvar_usuario(nome, email, senha)
+        sucesso, msg, _ = usuarios_controller.salvar_usuario(nome, email, senha)
         
         flash(msg, "success" if sucesso else "danger")
         
@@ -142,7 +190,7 @@ def editar_usuario_view(id):
         email = request.form.get("email")
         senha = request.form.get("senha")
         
-        sucesso, msg = usuarios_controller.salvar_usuario(nome, email, senha, usuario_id=id)
+        sucesso, msg, _ = usuarios_controller.salvar_usuario(nome, email, senha, usuario_id=id)
         
         flash(msg, "success" if sucesso else "danger")
         

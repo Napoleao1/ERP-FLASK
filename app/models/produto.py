@@ -7,14 +7,16 @@ class Produto(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     preco = db.Column(db.Float, nullable=False)
 
-    categoria_id = db.Column(db.Integer, 
-                             db.ForeignKey("categorias.id"), 
+    categoria_id = db.Column(db.Integer,
+                             db.ForeignKey("categorias.id"),
                              nullable=False)
-    
+
+    ativo = db.Column(db.Boolean, default=True, nullable=False)
+
     def to_dict(self):
         return {
             "id": self.id,
             "nome": self.nome,
             "preco": self.preco,
-            "categoria": self.categoria.nome
+            "categoria": self.categoria.nome if self.categoria else None
         }

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_paginacao.html" as paginador %}
 
 {% block content %}
     
@@ -27,16 +28,20 @@
 
                 <tbody>
 
-                    {% for produto in produtos %}
+                    {% for produto in paginacao.items %}
 
                         <tr>
                             <td class="fw-bold">{{ produto.id }}</td>
                             <td>{{ produto.nome }}</td>
                             <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
                             <td>
-                                <span class="badge bg-info text-dark fw-semibold">
-                                    {{ produto.categoria.nome }}
-                                </span>
+                                {% if produto.categoria %}
+                                    <span class="badge bg-info text-dark fw-semibold">
+                                        {{ produto.categoria.nome }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary fw-semibold">Sem categoria</span>
+                                {% endif %}
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
@@ -66,6 +71,15 @@
 
                 </tbody>
             </table>
+        </div>
+
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <small class="text-muted">
+                    Mostrando {{ paginacao.items|length }} de {{ paginacao.total }} produto(s)
+                </small>
+                {{ paginador.render(paginacao, 'web.listar_produtos_view') }}
+            </div>
         </div>
     </div>
 

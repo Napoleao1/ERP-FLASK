@@ -18,6 +18,12 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-3 gap-2">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.dashboard_view')}}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('web.listar_produtos_view')}}">
                             <i class="bi bi-box-seam"></i> Produtos
                         </a>
@@ -36,6 +42,21 @@
                     </li>
 
                 </ul>
+
+                {% if current_user.is_authenticated %}
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                    <li class="nav-item">
+                        <span class="navbar-text text-white">
+                            <i class="bi bi-person-circle"></i> {{ current_user.nome }}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-sm btn-outline-light" href="{{ url_for('web.logout_view') }}">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>

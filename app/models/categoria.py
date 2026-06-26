@@ -5,8 +5,9 @@ class Categoria(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(50), nullable=False)
+    ativo = db.Column(db.Boolean, default=True, nullable=False)
 
-    produtos = db.relationship("Produto", 
+    produtos = db.relationship("Produto",
                                backref="categoria", 
                                lazy=True)
 
